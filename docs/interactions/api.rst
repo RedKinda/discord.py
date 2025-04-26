@@ -45,6 +45,14 @@ MessageInteraction
 .. autoclass:: MessageInteraction()
     :members:
 
+MessageInteractionMetadata
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. attributetable:: MessageInteractionMetadata
+
+.. autoclass:: MessageInteractionMetadata()
+    :members:
+
 Component
 ~~~~~~~~~~
 
@@ -326,7 +334,12 @@ Enumerations
     .. attribute:: link
 
         Represents a link button.
+    .. attribute:: premium
 
+        Represents a button denoting that buying a SKU is
+        required to perform this action.
+
+        .. versionadded:: 2.4
     .. attribute:: blurple
 
         An alias for :attr:`primary`.

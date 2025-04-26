@@ -1489,9 +1489,9 @@ class Group:
     __discord_app_commands_installation_types__: Optional[AppInstallationType] = MISSING
     __discord_app_commands_default_permissions__: Optional[Permissions] = MISSING
     __discord_app_commands_has_module__: bool = False
-    __discord_app_commands_error_handler__: Optional[Callable[[Interaction, AppCommandError], Coroutine[Any, Any, None]]] = (
-        None
-    )
+    __discord_app_commands_error_handler__: Optional[
+        Callable[[Interaction, AppCommandError], Coroutine[Any, Any, None]]
+    ] = None
 
     def __init_subclass__(
         cls,
@@ -2373,6 +2373,12 @@ def guilds(*guild_ids: Union[Snowflake, int]) -> Callable[[T], T]:
         with the :meth:`CommandTree.command` or :meth:`CommandTree.context_menu` decorator
         then this must go below that decorator.
 
+    .. note ::
+
+        Due to a Discord limitation, this decorator cannot be used in conjunction with
+        contexts (e.g. :func:`.app_commands.allowed_contexts`) or installation types
+        (e.g. :func:`.app_commands.allowed_installs`).
+
     Example:
 
     .. code-block:: python3
@@ -2471,11 +2477,13 @@ def check(predicate: Check) -> Callable[[T], T]:
 
 
 @overload
-def guild_only(func: None = ...) -> Callable[[T], T]: ...
+def guild_only(func: None = ...) -> Callable[[T], T]:
+    ...
 
 
 @overload
-def guild_only(func: T) -> T: ...
+def guild_only(func: T) -> T:
+    ...
 
 
 def guild_only(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
@@ -2522,6 +2530,16 @@ def guild_only(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
         return inner(func)
 
 
+@overload
+def private_channel_only(func: None = ...) -> Callable[[T], T]:
+    ...
+
+
+@overload
+def private_channel_only(func: T) -> T:
+    ...
+
+
 def private_channel_only(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
     """A decorator that indicates this command can only be used in the context of DMs and group DMs.
 
@@ -2531,6 +2549,8 @@ def private_channel_only(func: Optional[T] = None) -> Union[T, Callable[[T], T]]
     This decorator can be called with or without parentheses.
 
     Due to a Discord limitation, this decorator does nothing in subcommands and is ignored.
+
+    .. versionadded:: 2.4
 
     Examples
     ---------
@@ -2562,6 +2582,16 @@ def private_channel_only(func: Optional[T] = None) -> Union[T, Callable[[T], T]]
         return inner
     else:
         return inner(func)
+
+
+@overload
+def dm_only(func: None = ...) -> Callable[[T], T]:
+    ...
+
+
+@overload
+def dm_only(func: T) -> T:
+    ...
 
 
 def dm_only(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
@@ -2605,15 +2635,15 @@ def dm_only(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
         return inner(func)
 
 
-def allowed_contexts(
-    guilds: bool = MISSING, dms: bool = MISSING, private_channels: bool = MISSING
-) -> Union[T, Callable[[T], T]]:
+def allowed_contexts(guilds: bool = MISSING, dms: bool = MISSING, private_channels: bool = MISSING) -> Callable[[T], T]:
     """A decorator that indicates this command can only be used in certain contexts.
     Valid contexts are guilds, DMs and private channels.
 
     This is **not** implemented as a :func:`check`, and is instead verified by Discord server side.
 
     Due to a Discord limitation, this decorator does nothing in subcommands and is ignored.
+
+    .. versionadded:: 2.4
 
     Examples
     ---------
@@ -2649,12 +2679,24 @@ def allowed_contexts(
     return inner
 
 
+@overload
+def guild_install(func: None = ...) -> Callable[[T], T]:
+    ...
+
+
+@overload
+def guild_install(func: T) -> T:
+    ...
+
+
 def guild_install(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
     """A decorator that indicates this command should be installed in guilds.
 
     This is **not** implemented as a :func:`check`, and is instead verified by Discord server side.
 
     Due to a Discord limitation, this decorator does nothing in subcommands and is ignored.
+
+    .. versionadded:: 2.4
 
     Examples
     ---------
@@ -2687,12 +2729,24 @@ def guild_install(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
         return inner(func)
 
 
+@overload
+def user_install(func: None = ...) -> Callable[[T], T]:
+    ...
+
+
+@overload
+def user_install(func: T) -> T:
+    ...
+
+
 def user_install(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
     """A decorator that indicates this command should be installed for users.
 
     This is **not** implemented as a :func:`check`, and is instead verified by Discord server side.
 
     Due to a Discord limitation, this decorator does nothing in subcommands and is ignored.
+
+    .. versionadded:: 2.4
 
     Examples
     ---------
@@ -2728,13 +2782,15 @@ def user_install(func: Optional[T] = None) -> Union[T, Callable[[T], T]]:
 def allowed_installs(
     guilds: bool = MISSING,
     users: bool = MISSING,
-) -> Union[T, Callable[[T], T]]:
+) -> Callable[[T], T]:
     """A decorator that indicates this command should be installed in certain contexts.
     Valid contexts are guilds and users.
 
     This is **not** implemented as a :func:`check`, and is instead verified by Discord server side.
 
     Due to a Discord limitation, this decorator does nothing in subcommands and is ignored.
+
+    .. versionadded:: 2.4
 
     Examples
     ---------
